@@ -1,0 +1,7 @@
+{
+  "name": "speed-test",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2026-07-01",
+  "assets": { "directory": "./public" },
+  "routes": [{ "pattern": "speed-test.jozo.beer", "custom_domain": true }]
+}
