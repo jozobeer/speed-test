@@ -24,4 +24,6 @@ app.post("/api/upload", async (c) => {
   return c.json({ ok: true, receivedBytes: UPLOAD_BYTES });
 });
 
+app.notFound((c) => c.json({ ok: false, error: "not found" }, 404));
+
 export default app;

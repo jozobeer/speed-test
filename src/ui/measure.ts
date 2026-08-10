@@ -37,8 +37,8 @@ export async function measureUpload(deps: MeasureDeps): Promise<MeasureResult> {
     body,
     headers: { "Content-Type": "application/octet-stream" },
   });
-  const json = (await response.json()) as { ok?: boolean; receivedBytes?: number };
   const elapsed = now() - started;
+  const json = (await response.json()) as { ok?: boolean; receivedBytes?: number };
   if (!json.ok || json.receivedBytes !== UPLOAD_BYTES) {
     throw new Error("upload rejected");
   }

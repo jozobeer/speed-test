@@ -42,7 +42,7 @@ describe("measureDownload", () => {
 });
 
 describe("measureUpload", () => {
-  it("UPLOAD_BYTES の FILL_BYTE 埋め body を送り、送信区間の mbps を返す", async () => {
+  it("UPLOAD_BYTES の FILL_BYTE 埋め body を送り、レスポンス受領までの mbps を返す", async () => {
     let t = 500;
     const fetchFn = vi.fn(async (_url: string, init?: RequestInit) => {
       t = 1500;
@@ -50,10 +50,12 @@ describe("measureUpload", () => {
       expect(body).toBeInstanceOf(Uint8Array);
       expect(body.byteLength).toBe(UPLOAD_BYTES);
       expect(body.every((b) => b === FILL_BYTE)).toBe(true);
-      return new Response(JSON.stringify({ ok: true, receivedBytes: UPLOAD_BYTES }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
+      return {
+        json: async () => {
+          t = 2500;
+          return { ok: true, receivedBytes: UPLOAD_BYTES };
+        },
+      } as Response;
     });
 
     const result = await measureUpload({

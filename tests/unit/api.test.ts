@@ -46,3 +46,12 @@ describe("POST /api/upload", () => {
     });
   });
 });
+
+describe("undefined /api/*", () => {
+  it("JSON の 404 を返す", async () => {
+    const res = await app.request("/api/does-not-exist");
+    expect(res.status).toBe(404);
+    expect(res.headers.get("Content-Type")).toMatch(/application\/json/);
+    expect(await res.json()).toEqual({ ok: false, error: "not found" });
+  });
+});
