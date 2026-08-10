@@ -1,6 +1,8 @@
 # 回線速度チェッカー
 
-ブラウザとサーバの間で固定サイズのダミーデータを実際に往復させ、送信と受信それぞれの所要時間から上り速度と下り速度をMbpsで算出し、過去の計測結果と並べて表示するアプリ。
+ブラウザから Cloudflare Workers 上の API へ固定サイズのダミーデータを送受信し、下り（受信）と上り（送信）の実効速度を Mbps で表示する Web アプリです。
+
+「計測」を押すと、先に `GET /api/download` から 4 MiB（4,194,304 バイト）を受信し、続けて `POST /api/upload` へ 2 MiB（2,097,152 バイト）を送信します。それぞれの所要時間から速度を小数第2位まで算出し、計測中は「下り計測中…」「上り計測中…」と段階表示します。結果（日時・下り・上り）は localStorage に残り、履歴テーブルで新しい順に見比べられます。タイトルと `apps.jozo.beer` フッターは `#root` 外の静的 HTML なので、API や JS が使えなくても骨格は表示されます。
 
 ## 公開URL
 
@@ -20,6 +22,9 @@ https://speed-test.jozo.beer
 ## 構成
 
 - `index.html` + `src/ui/` — React UI の正本（`public/index.html` はビルド出力）
-- `src/worker/index.ts` — Hono の Worker（`/api/*` の JSON API）
+- `src/shared/constants.ts` — 転送バイト数など UI / Worker 共用定数
+- `src/ui/measure.ts` — 計測・Mbps 算出（依存注入可能な純粋モジュール）
+- `src/ui/history.ts` — localStorage の履歴読み書き
+- `src/worker/index.ts` — Hono の Worker（`/api/health`・`/api/download`・`/api/upload`）
 - `tests/unit/` — vitest ユニットテスト、`tests/app.spec.ts` — Playwright E2E
-- `PLAN.md` — 受け入れ条件付きの実装計画
+- `PLAN.md` — 初回実装時の計画（歴史的文書。現状の正は本 README とテスト）
