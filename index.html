@@ -4,10 +4,200 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>回線速度チェッカー</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23324a5e'/%3E%3C/svg%3E" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b1c24'/%3E%3Ccircle cx='16' cy='18' r='10' fill='none' stroke='%233d6b7a' stroke-width='2'/%3E%3Cpath d='M8 18a8 8 0 0 1 16 0' fill='none' stroke='%2326c6a0' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='18' r='2' fill='%23f0f7f4'/%3E%3Cline x1='16' y1='18' x2='22' y2='11' stroke='%23f0b429' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg0: #07141a;
+        --bg1: #0e2a33;
+        --ink: #e8f2ef;
+        --muted: #8aa8a3;
+        --accent: #26c6a0;
+        --panel: rgba(14, 42, 51, 0.72);
+        --line: rgba(38, 198, 160, 0.22);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--ink);
+        font-family: "Outfit", sans-serif;
+        background:
+          radial-gradient(ellipse 80% 50% at 20% -10%, rgba(38, 198, 160, 0.18), transparent 55%),
+          radial-gradient(ellipse 60% 40% at 90% 10%, rgba(240, 180, 41, 0.08), transparent 50%),
+          linear-gradient(165deg, var(--bg0), var(--bg1) 55%, #0a1f28);
+        background-attachment: fixed;
+      }
+
+      .shell {
+        width: min(42rem, calc(100% - 2rem));
+        margin: 0 auto;
+        padding: 2.5rem 0 1rem;
+      }
+
+      .brand {
+        margin: 0 0 1.75rem;
+        animation: rise 0.7s ease-out both;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: clamp(1.8rem, 5vw, 2.6rem);
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        line-height: 1.15;
+      }
+
+      .brand p {
+        margin: 0.55rem 0 0;
+        color: var(--muted);
+        font-size: 1rem;
+        max-width: 28rem;
+      }
+
+      .app {
+        display: grid;
+        gap: 1.25rem;
+        animation: rise 0.7s ease-out 0.08s both;
+      }
+
+      .measure-btn {
+        justify-self: start;
+        appearance: none;
+        border: none;
+        border-radius: 0.55rem;
+        padding: 0.85rem 1.6rem;
+        font: inherit;
+        font-weight: 600;
+        font-size: 1.05rem;
+        color: #042018;
+        background: linear-gradient(135deg, var(--accent), #4ad4b0);
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+        box-shadow: 0 0.4rem 1.2rem rgba(38, 198, 160, 0.28);
+      }
+
+      .measure-btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+      }
+
+      .measure-btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+        box-shadow: none;
+      }
+
+      .status {
+        margin: 0;
+        min-height: 1.5rem;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .results {
+        display: grid;
+        gap: 0.75rem;
+        padding: 1.1rem 1.2rem;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 0.75rem;
+        backdrop-filter: blur(8px);
+        animation: pop 0.35s ease-out;
+      }
+
+      .measured-at {
+        margin: 0;
+        color: var(--muted);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.82rem;
+      }
+
+      .speed-pair {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .speed-block {
+        display: grid;
+        gap: 0.25rem;
+      }
+
+      .speed-label {
+        color: var(--muted);
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+      }
+
+      .speed-value {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: clamp(1.35rem, 4vw, 1.75rem);
+        font-weight: 500;
+        color: var(--accent);
+      }
+
+      .history h2 {
+        margin: 0 0 0.65rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+      }
+
+      .empty {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 0.55rem 0.4rem;
+        border-bottom: 1px solid rgba(138, 168, 163, 0.18);
+      }
+
+      th {
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 0.8rem;
+      }
+
+      td {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.82rem;
+      }
+
+      @keyframes rise {
+        from { opacity: 0; transform: translateY(0.6rem); }
+        to { opacity: 1; transform: none; }
+      }
+
+      @keyframes pop {
+        from { opacity: 0; transform: scale(0.98); }
+        to { opacity: 1; transform: none; }
+      }
+
+      @media (max-width: 520px) {
+        .speed-pair { grid-template-columns: 1fr; }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div class="shell">
+      <header class="brand">
+        <h1>回線速度チェッカー</h1>
+        <p>上りと下りの実効速度をその場で切り分け、条件違いの計測を端末に残して見比べます。</p>
+      </header>
+      <div id="root"></div>
+    </div>
     <footer style="margin-top:3rem;text-align:center;font-size:.8rem;opacity:.6">
       <a href="https://apps.jozo.beer" style="color:inherit">apps.jozo.beer</a>
     </footer>
