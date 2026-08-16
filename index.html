@@ -4,6 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>回線速度チェッカー</title>
+    <meta name="description" content="ブラウザとサーバの間で固定サイズのデータを送受信し、下り・上りの実効速度を Mbps で表示するアプリ。結果はこの端末の履歴に残して見比べられます。" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "回線速度チェッカー",
+        "description": "ブラウザとサーバの間で固定サイズのデータを送受信し、下り・上りの実効速度を Mbps で表示するアプリ。結果はこの端末の履歴に残して見比べられます。",
+        "url": "https://speed-test.jozo.beer/",
+        "applicationCategory": "UtilitiesApplication",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" }
+      }
+    </script>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b1c24'/%3E%3Ccircle cx='16' cy='18' r='10' fill='none' stroke='%233d6b7a' stroke-width='2'/%3E%3Cpath d='M8 18a8 8 0 0 1 16 0' fill='none' stroke='%2326c6a0' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='18' r='2' fill='%23f0f7f4'/%3E%3Cline x1='16' y1='18' x2='22' y2='11' stroke='%23f0b429' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -175,6 +187,44 @@
         font-size: 0.82rem;
       }
 
+      .guide {
+        display: grid;
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      .guide h2 {
+        margin: 0 0 0.65rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+      }
+
+      .guide ol {
+        margin: 0;
+        padding-left: 1.25rem;
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.7;
+      }
+
+      .guide dl {
+        margin: 0;
+        display: grid;
+        gap: 0.9rem;
+      }
+
+      .guide dt {
+        font-weight: 600;
+        font-size: 0.92rem;
+      }
+
+      .guide dd {
+        margin: 0.3rem 0 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.65;
+      }
+
       @keyframes rise {
         from { opacity: 0; transform: translateY(0.6rem); }
         to { opacity: 1; transform: none; }
@@ -197,6 +247,29 @@
         <p>上りと下りの実効速度をその場で切り分け、条件違いの計測を端末に残して見比べます。</p>
       </header>
       <div id="root"></div>
+      <div class="guide">
+        <section id="how-to" aria-labelledby="how-to-heading">
+          <h2 id="how-to-heading">使い方</h2>
+          <ol>
+            <li>「計測」ボタンを押します。</li>
+            <li>下り（約 4 MiB の受信）のあと、上り（約 2 MiB の送信）を順に測ります。</li>
+            <li>実効速度が Mbps で表示され、この端末の履歴に新しい順で残ります。</li>
+          </ol>
+        </section>
+        <section id="faq" aria-labelledby="faq-heading">
+          <h2 id="faq-heading">よくある質問</h2>
+          <dl>
+            <dt>下りと上りは何が違いますか？</dt>
+            <dd>下りはデータを受け取る速さ、上りは送り出す速さです。動画の視聴は下り、写真の送信は上りが効きます。</dd>
+            <dt>計測結果はどこに保存されますか？</dt>
+            <dd>このブラウザの中にだけ残ります。サーバへは送らず、別の端末やブラウザでは見えません。</dd>
+            <dt>表示される速度は契約速度と同じですか？</dt>
+            <dd>固定サイズのダミーデータを送受信した実効速度です。混雑や端末の状態で変わり、契約上の最大速度とは限りません。</dd>
+            <dt>ログインは必要ですか？</dt>
+            <dd>不要です。「計測」を押すだけで使えます。</dd>
+          </dl>
+        </section>
+      </div>
     </div>
     <footer style="margin-top:3rem;text-align:center;font-size:.8rem;opacity:.6">
       <a href="https://apps.jozo.beer" style="color:inherit">apps.jozo.beer</a>

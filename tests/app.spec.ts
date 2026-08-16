@@ -132,3 +132,44 @@ test("file:// で index.html を開いてもタイトルとフッターが表示
   await expect(page.getByRole("link", { name: "apps.jozo.beer" })).toBeVisible();
   await context.close();
 });
+
+function webApplicationFromJsonLd(data: unknown): Record<string, unknown> | undefined {
+  const extra =
+    data && typeof data === "object" && "@graph" in data && Array.isArray(data["@graph"])
+      ? data["@graph"]
+      : [];
+  const nodes = Array.isArray(data) ? data : [data, ...extra];
+  return nodes.find((node): node is Record<string, unknown> => {
+    if (!node || typeof node !== "object") return false;
+    const type = (node as { "@type"?: unknown })["@type"];
+    return type === "WebApplication" || (Array.isArray(type) && type.includes("WebApplication"));
+  });
+}
+
+test("SEO: meta description がある", async ({ page }) => {
+  await page.goto("/");
+  const content = await page.locator('meta[name="description"]').getAttribute("content");
+  expect(content?.trim()).toBeTruthy();
+});
+
+test("SEO: JSON-LD の WebApplication がある", async ({ page }) => {
+  await page.goto("/");
+  const jsonLd = page.locator('script[type="application/ld+json"]');
+  await expect(jsonLd).toHaveCount(1);
+  const raw = await jsonLd.first().textContent();
+  expect(raw?.trim()).toBeTruthy();
+  const app = webApplicationFromJsonLd(JSON.parse(raw!));
+  expect(app).toBeTruthy();
+  expect(String(app?.name ?? "").trim()).toBeTruthy();
+  expect(String(app?.description ?? "").trim()).toBeTruthy();
+  expect(String(app?.url ?? "").trim()).toBeTruthy();
+  expect(String(app?.applicationCategory ?? "").trim()).toBeTruthy();
+  const offers = app?.offers as { price?: unknown } | undefined;
+  expect(String(offers?.price)).toBe("0");
+});
+
+test("SEO: 使い方と FAQ のセクションがある", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "使い方" })).toBeVisible();
+  await expect(page.locator("#faq")).toBeVisible();
+});
